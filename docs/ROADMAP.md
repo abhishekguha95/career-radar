@@ -19,4 +19,6 @@ Phase 1 plan approved 2026-10-21. Work proceeds in independently verified commit
 5. Narrow India-remote geography signal, read-only API, contract tests.
 6. Clean developer-journey verification and completed documentation.
 
-Current state: increments 1-5 implemented; API checks being finalized. Next: full developer-journey verification and final documentation. No UI is currently planned; the API is the Phase 1 demo. Compose runs PostgreSQL only; API/worker containers and Redis are deferred per owner clarification. Later phases are not approved.
+Current state: **Phase 1 complete and verified**, 2026-10-21. Fresh-source install/build/migrations, 51 unit tests, 42 PostgreSQL integration tests, deterministic replays, compiled API queries, and a bounded live read passed. See VERIFICATION.md for evidence and limitations. The API is the Phase 1 demo; UI is deferred. Compose runs PostgreSQL only; API/worker containers and Redis are deferred per owner clarification.
+
+Next: review the Phase 1 code/decisions and discuss Phase 2's candidate-profile and baseline-ranking plan, including target-employer coverage and a labeled geography benchmark. **Do not implement Phase 2 before approval.** No remote branch has been pushed or deployed.
