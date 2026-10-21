@@ -43,3 +43,7 @@ Actual `pnpm db:migrate` applied the second migration for latest-observation pro
 `build`, `typecheck`, and `lint` passed. Unit suite: **51 tests in 2 files**; PostgreSQL suite: **19 tests in 2 files**. Confirmed one ELIGIBLE, one INELIGIBLE, and one UNKNOWN assessment from the baseline fixture, without duplicate assessments on replay. Unit cases cover negation, questions, unsupported/conditional wording, sponsorship ambiguity, contradictory statements/metadata, contextual qualifiers, and exact evidence offsets.
 
 The first integration run found that HTML list bullets prevented an otherwise explicit permission statement from matching. Corrected bullet handling, added an offset-preserving regression test, and reran both suites successfully. These are deterministic rule tests, not a measured real-job precision/recall benchmark.
+
+## Increment 5b: read-only API
+
+`build`, `typecheck`, `lint` passed. PostgreSQL integration suite: **42 tests in 3 files**, including 23 API contract cases. Covers process/readiness separation, stable-data pagination, source/title/location/freshness/workplace/mode and combined filtering, additional-location search, literal SQL wildcard handling, invalid/repeated/unknown query parameters, invalid/missing IDs, request-correlated error envelopes, sanitized database failures, safe JSON headers, evidence/provenance, and preserved history.

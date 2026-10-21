@@ -34,3 +34,9 @@ Each source has a session advisory lock, released on completion or connection lo
 Live requests are GET-only against fixed Lever API hosts. Source identifiers are validated. Redirects, excessive payloads, timeouts and retry exhaustion are errors; no fetched instructions execute. HTML is converted to text before display/classification. Raw source content is retained as evidence, not executable markup.
 
 Implementation status and verification: see ROADMAP.md and VERIFICATION.md.
+
+## HTTP boundary
+
+The API binds to loopback only. GET /health checks process liveness; GET /ready checks the database and expected migration fields. GET /jobs validates a strict filter schema, uses parameterized SQL and bounded offset pagination, and omits descriptions/raw payloads. GET /jobs/:id returns description, current raw provenance, latest observation, and metadata for the last 20 preserved versions. A repeatable-read transaction keeps each list/count or detail response internally consistent. Different pagination requests can shift if ingestion changes the dataset between requests.
+
+Errors have `{error:{code,message,requestId,details?}}`; internal database details are not returned. Request IDs are server-generated. Responses use JSON, no-store, nosniff, and a restrictive CSP. No HTML renderer, CORS access, arbitrary fetch endpoint, or write API exists in Phase 1. Local loopback is the security boundary; shared hosting requires authentication and an explicit later review.

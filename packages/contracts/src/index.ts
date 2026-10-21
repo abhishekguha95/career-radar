@@ -79,3 +79,16 @@ export interface RunCounters {
   unchanged: number;
   rejected: number;
 }
+
+const positiveInteger = z.string().regex(/^[1-9]\d{0,4}$/).transform(Number);
+export const jobsQuerySchema = z.object({
+  page: positiveInteger.pipe(z.number().max(10_000)).default(1),
+  limit: positiveInteger.pipe(z.number().max(100)).default(20),
+  title: z.string().trim().min(1).max(200).optional(),
+  source: z.uuid().optional(),
+  location: z.string().trim().min(1).max(200).optional(),
+  observedSince: z.iso.datetime({ offset: true }).optional(),
+  workplace: workplaceSchema.optional(),
+  mode: z.enum(['FIXTURE', 'LIVE']).optional(),
+}).strict();
+export type JobsQuery = z.infer<typeof jobsQuerySchema>;
