@@ -2,6 +2,8 @@
 
 Prepared 2026-10-21 against completed application revision `359092e`. Phases 1 and 2 are implemented and verified. This document is a proposed next-phase plan and continuity record; it does not record approval of new connectors, schemas, eligibility rules or ranking weights.
 
+Owner update, 2026-10-22: use separate India & Global Remote and Europe Relocation tracks, each running daily in the morning, Asia/Kolkata. Daily supersedes the initially supplied weekday schedules. Preserve repeat observations without duplicate postings, and keep collection coverage independent of the briefing limit. See [ROADMAP daily search requirements](ROADMAP.md#phase-3-daily-search-requirements) and D019 in [DECISIONS](DECISIONS.md). This is a reviewed cadence requirement; scheduling and briefing-history implementation remain pending. Daily polling does not guarantee capture of every vacancy.
+
 ## Start here
 
 The next useful outcome is **a small set of actual target-employer postings, followed by an explainable shortlist for an explicitly reviewed search profile**. Establish useful coverage before building matching sophistication.
