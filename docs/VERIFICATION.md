@@ -1,6 +1,6 @@
 # Verification evidence
 
-Phase 1 acceptance verified on 2026-10-21. Evidence below records checks actually run, including initial failures and their fixes. Increment counts describe the suite at that point; final totals are 51 unit tests and 42 PostgreSQL integration tests.
+Phases 1–2 verified on 2026-10-21. Evidence below records checks actually run, including initial failures and their fixes. Increment counts describe the suite at that point; current totals are 59 unit tests, 43 PostgreSQL integration tests, and 8 browser tests.
 
 2026-10-21 environment checks: Node 24.3.0, npm 11.18.0, Docker 29.8.1, Compose 5.5.1. Docker daemon responds outside the sandbox. pnpm was absent initially; Python resolves to an unusable Windows alias; no host psql is installed. npm metadata/peer ranges were checked outside the network sandbox.
 
@@ -71,12 +71,28 @@ The compiled API process was stopped after verification; start it with `pnpm sta
 
 The child CLI returns 2 for PARTIAL; nested pnpm script runners translated that to exit 1 during the live check. This behavior is documented; use the direct Node entry point for precise automation exit codes.
 
-## Limits of the evidence
-
 ## Phase 2 increment 1: UI read boundary
 
 Phase 2 UI scope is approved in revised ROADMAP.md. Added shared runtime response contracts and GET /sources with database-wide posting/remote counts, health, and latest run metadata, including sources with no runs. `build`, `typecheck`, `lint`, and **43 PostgreSQL integration tests** passed. Contract checks validate the actual API payloads used by the frontend and reject unsafe link schemes.
 
 The in-app browser tool could not initialize (`sandbox-state-meta: missing field sandboxPolicy`), before any tab interaction. Local Chrome is installed; browser verification will use standalone Playwright as the documented fallback. No Site was registered or published.
+
+## Phase 2 increment 2: dashboard and startup commands
+
+- `npm run setup`: passed with the committed frozen lockfile and pinned pnpm bootstrap; no global pnpm required.
+- `npm run build`: all six workspaces compiled, including a Next.js production build. Dynamic dashboard/sources and static guide routes generated successfully.
+- `npm run typecheck` and `npm run lint`: passed, including frontend and browser-test code.
+- `npm test`: **59 tests in 3 files passed**; frontend URL parsing, malformed/repeated filters and encoded links added to the existing domain checks.
+- `npm run test:integration`: **43 tests in 3 files passed** against PostgreSQL 18.6.
+- `npm run test:ui`: **8 tests passed** in installed Google Chrome, covering desktop 1440×1100 and a Pixel 7 mobile viewport. Verified browsing/sample labels, title search, clearing filters, pagination, selected-posting evidence/history, safe external links, empty/invalid states and partial/unrun sources. Checked document width for overflow and captured/visually reviewed both dashboard sizes. No uncaught page errors in the dashboard checks.
+- The UI runner creates a random schema in the dedicated `_test` database, applies migrations and fictional fixtures, starts the actual `npm run backend`/`npm run frontend` commands on 3101/3100, and removes the schema afterward. Development data remains separate.
+- `npm run db:start`: PostgreSQL healthy. `npm run db:migrate`: zero pending migrations. `npm run demo`: SUCCEEDED, created=0, unchanged=3, rejected=0 in the existing development database.
+- A separate production-server Chrome smoke check used an unavailable API origin: dashboard and sources displayed the recovery screen and startup commands; the guide still worked; no uncaught page errors. Temporary server stopped afterward.
+
+Initial build found a malformed option tag, fixed before verification. The first dependency install rejected lucide-react 1.61.0 under the 24-hour release-age policy; pinned compatible 1.60.0 instead. The first browser pass exposed a test race clicking a tab before selected-job navigation completed; the test now waits for the selected heading and selected tab. The complete rerun passed. Screenshots prompted larger, darker supporting text before that rerun. An initial offline-smoke locator matched Next.js's route announcer as well as the app alert; scoped the assertion to the recovery command and reran successfully. These were corrected verification failures; no retries are configured in the browser suite.
+
+Browser screenshots/traces and the one-off offline smoke script remain ignored local artifacts. No remote registration, hosting or deployment occurred. Browser checks ran against the development server; the separate offline check exercised the production server. A clean-source installation was verified in Phase 1; Phase 2's frozen install/build ran in the current checkout, not a new archive. No performance or full accessibility audit is claimed.
+
+## Limits of the evidence
 
 Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, real-employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure, fuzzy merges, or later-phase features were implemented.

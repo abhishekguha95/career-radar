@@ -8,3 +8,6 @@ coverage/
 .pnpm-store/
 .tooling/
 test-results/
+playwright-report/
+**/.next/
+**/next-env.d.ts

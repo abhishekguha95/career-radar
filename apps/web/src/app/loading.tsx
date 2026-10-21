@@ -1,0 +1,3 @@
+export default function Loading() {
+  return <div className="loading-page" role="status" aria-label="Loading opportunities"><div className="skeleton skeleton-heading" /><div className="skeleton skeleton-copy" /><div className="metrics">{[0, 1, 2].map((item) => <div className="skeleton skeleton-metric" key={item} />)}</div><div className="skeleton skeleton-search" /><div className="results-layout"><div>{[0, 1, 2].map((item) => <div className="skeleton skeleton-job" key={item} />)}</div><div className="skeleton skeleton-detail" /></div><span className="sr-only">Loading stored opportunities…</span></div>;
+}
