@@ -1,0 +1,14 @@
+{
+  "name": "@career-radar/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "scripts": { "build": "tsc -p tsconfig.json", "typecheck": "tsc -p tsconfig.json --noEmit" },
+  "dependencies": {
+    "@career-radar/contracts": "workspace:*",
+    "html-to-text": "10.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": { "@types/html-to-text": "9.0.4" }
+}

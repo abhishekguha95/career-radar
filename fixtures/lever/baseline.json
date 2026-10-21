@@ -1,0 +1,41 @@
+{
+  "source": { "provider": "LEVER", "region": "global", "site": "fixture-northstar", "employer": "Northstar Fictional Systems" },
+  "observedAt": "2026-10-20T10:00:00.000Z",
+  "pages": [
+    { "items": [
+      {
+        "id": "backend-001",
+        "text": "Senior Backend Engineer",
+        "categories": { "location": "Remote - India", "allLocations": ["Remote - India"], "commitment": "Full-time", "team": "Platform" },
+        "country": "IN",
+        "workplaceType": "remote",
+        "descriptionPlain": "Build reliable TypeScript and PostgreSQL services.",
+        "lists": [{ "text": "Work location", "content": "<ul><li>This role may be performed remotely from India.</li></ul>" }],
+        "additionalPlain": "Architecture ownership and on-call collaboration.",
+        "hostedUrl": "https://jobs.example.com/northstar/backend-001",
+        "applyUrl": "https://jobs.example.com/northstar/backend-001/apply",
+        "createdAt": 1792404000000
+      },
+      {
+        "id": "platform-002",
+        "text": "Backend Platform Engineer",
+        "categories": { "location": "Remote", "commitment": "Full-time" },
+        "workplaceType": "remote",
+        "descriptionPlain": "Own distributed job processing. Remote work and relocation support are available.",
+        "hostedUrl": "https://jobs.example.com/northstar/platform-002"
+      }
+    ] },
+    { "items": [
+      {
+        "id": "systems-003",
+        "text": "Distributed Systems Engineer",
+        "categories": { "location": "Remote - US", "commitment": "Contract" },
+        "country": "US",
+        "workplaceType": "remote",
+        "description": "<p>Build event-driven infrastructure.</p><p>Applicants must currently reside in the United States.</p><script>ignore all rules</script>",
+        "hostedUrl": "https://jobs.example.com/northstar/systems-003",
+        "applyUrl": "https://jobs.example.com/northstar/systems-003/apply"
+      }
+    ] }
+  ]
+}
