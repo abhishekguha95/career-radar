@@ -107,15 +107,16 @@ export class JobRepository {
       if (!existing) {
         const opportunity = await client.query<{ id: string }>('INSERT INTO opportunities DEFAULT VALUES RETURNING id');
         await client.query(`INSERT INTO job_postings
-          (id,source_id,opportunity_id,external_id,title,employer,location,workplace,normalized,first_seen_at,last_seen_at,content_hash,current_snapshot_id,last_run_id)
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11,$12,$13)`,
-        [postingId, sourceId, opportunity.rows[0]!.id, record.job.externalId, record.job.title, record.job.employer, record.job.location, record.job.workplace, record.job, observedAt, hash, snapshotId, runId]);
+          (id,source_id,opportunity_id,external_id,title,employer,location,workplace,normalized,first_seen_at,last_seen_at,content_hash,current_snapshot_id,last_run_id,last_provenance)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11,$12,$13,$14)`,
+        [postingId, sourceId, opportunity.rows[0]!.id, record.job.externalId, record.job.title, record.job.employer, record.job.location, record.job.workplace, record.job, observedAt, hash, snapshotId, runId, record.provenance]);
       } else {
         if (changed) snapshotId = randomUUID();
         await client.query(`UPDATE job_postings SET title=$2,employer=$3,location=$4,workplace=$5,normalized=$6,
           first_seen_at=LEAST(first_seen_at,$7),last_seen_at=GREATEST(last_seen_at,$7),content_hash=$8,current_snapshot_id=$9,
-          last_run_id=CASE WHEN $7 >= last_seen_at THEN $10 ELSE last_run_id END
-          WHERE id=$1`, [postingId, record.job.title, record.job.employer, record.job.location, record.job.workplace, record.job, observedAt, hash, snapshotId, runId]);
+          last_run_id=CASE WHEN $7 >= last_seen_at THEN $10 ELSE last_run_id END,
+          last_provenance=CASE WHEN $7 >= last_seen_at THEN $11 ELSE last_provenance END
+          WHERE id=$1`, [postingId, record.job.title, record.job.employer, record.job.location, record.job.workplace, record.job, observedAt, hash, snapshotId, runId, record.provenance]);
       }
       if (changed) {
         await client.query(`INSERT INTO job_snapshots

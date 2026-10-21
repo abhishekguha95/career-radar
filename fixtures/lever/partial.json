@@ -1,0 +1,13 @@
+{
+  "source": { "provider": "LEVER", "region": "global", "site": "fixture-northstar", "employer": "Northstar Fictional Systems" },
+  "observedAt": "2026-10-22T10:00:00.000Z",
+  "pages": [
+    { "items": [{
+      "id": "platform-002", "text": "Senior Backend Platform Engineer",
+      "categories": { "location": "Remote", "commitment": "Full-time" }, "workplaceType": "remote",
+      "descriptionPlain": "Own distributed job processing. Remote work and relocation support are available.",
+      "hostedUrl": "https://jobs.example.com/northstar/platform-002"
+    }] },
+    { "error": { "code": "FIXTURE_PAGE_FAILURE", "message": "Deliberate later-page failure" } }
+  ]
+}

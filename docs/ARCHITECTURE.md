@@ -27,7 +27,9 @@ erDiagram
 
 Source identity is provider + region + site + mode (FIXTURE/LIVE). Posting identity is source ID + external ID. URLs are provenance, never the sole uniqueness key. Each new posting gets an opportunity without speculative cross-posting merges. Older changed observations are rejected; unchanged observations never regress freshness.
 
-Unknown source dates and attributes stay null/unknown. Observation freshness is distinct from posting age. Snapshots retain raw and normalized content plus mapping version; observations track the latest successful sighting even on partial runs. Missing posts are never automatically closed in Phase 1.
+Unknown source dates and attributes stay null/unknown. Observation freshness is distinct from posting age. Snapshots retain raw and normalized content plus mapping version; the posting's latest provenance tracks the last successful sighting even on partial runs. Missing posts are never automatically closed in Phase 1. Posting history is append-only through the repository; this is not a claim that database administrators cannot edit their local database.
+
+Each source has a session advisory lock, released on completion or connection loss. Each posting transaction also locks its exact source/ID, preventing concurrent duplicate inserts and orphan opportunities. Malformed records are rejected individually. Unknown persistence failures stop the crawl; expected older-content rejections can continue. Run outcomes distinguish complete enumeration from error-free processing: a complete crawl containing malformed records can still be PARTIAL. Error samples are capped at 50; counters retain total accepted/rejected records. An interrupted process can leave RUNNING until the next locked run marks it ABORTED; unfinalized counters may underreport committed records.
 
 Live requests are GET-only against fixed Lever API hosts. Source identifiers are validated. Redirects, excessive payloads, timeouts and retry exhaustion are errors; no fetched instructions execute. HTML is converted to text before display/classification. Raw source content is retained as evidence, not executable markup.
 

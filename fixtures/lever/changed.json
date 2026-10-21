@@ -1,0 +1,15 @@
+{
+  "source": { "provider": "LEVER", "region": "global", "site": "fixture-northstar", "employer": "Northstar Fictional Systems" },
+  "observedAt": "2026-10-21T10:00:00.000Z",
+  "pages": [{ "items": [{
+    "id": "backend-001",
+    "text": "Senior Backend Engineer - Platform",
+    "categories": { "location": "Remote - India", "commitment": "Full-time" },
+    "country": "IN",
+    "workplaceType": "remote",
+    "descriptionPlain": "Own TypeScript and PostgreSQL platform architecture. This role may be performed remotely from India.",
+    "hostedUrl": "https://jobs.example.com/northstar/backend-001",
+    "applyUrl": "https://jobs.example.com/northstar/backend-001/apply",
+    "createdAt": 1792404000000
+  }] }]
+}

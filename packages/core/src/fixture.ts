@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { sourceConfigSchema } from '@career-radar/contracts';
 import type { SourceConfig } from '@career-radar/contracts';
 import { z } from 'zod';
@@ -17,6 +17,7 @@ const fixtureSchema = z.object({
 export type Fixture = z.infer<typeof fixtureSchema>;
 
 export async function readFixture(path: string): Promise<Fixture> {
+  if ((await stat(path)).size > 8 * 1024 * 1024) throw new SourceError('FIXTURE_TOO_LARGE', 'Fixture exceeds the byte limit');
   const bytes = await readFile(path);
   if (bytes.byteLength > 8 * 1024 * 1024) throw new SourceError('FIXTURE_TOO_LARGE', 'Fixture exceeds the byte limit');
   return fixtureSchema.parse(JSON.parse(bytes.toString('utf8')));

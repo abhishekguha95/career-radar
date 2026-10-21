@@ -2,6 +2,7 @@ import { sourceConfigSchema } from '@career-radar/contracts';
 import type { EmploymentType, NormalizedRecord, Provenance, SourceConfig, Workplace } from '@career-radar/contracts';
 import { convert } from 'html-to-text';
 import { z } from 'zod';
+import { setTimeout as delay } from 'node:timers/promises';
 import { SourceError } from './adapter.js';
 import type { PostingAdapter, SourcePage } from './adapter.js';
 
@@ -101,6 +102,7 @@ export interface LeverOptions {
   sleep?: (ms: number) => Promise<void>;
   now?: () => Date;
   random?: () => number;
+  signal?: AbortSignal;
 }
 
 export class LeverAdapter implements PostingAdapter {
@@ -110,8 +112,9 @@ export class LeverAdapter implements PostingAdapter {
     this.options = {
       pageSize: 100, timeoutMs: 10_000, maxResponseBytes: 8 * 1024 * 1024, maxAttempts: 3,
       fetch: globalThis.fetch,
-      sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+      sleep: (ms) => delay(ms, undefined, { signal: options.signal }),
       now: () => new Date(), random: Math.random,
+      signal: new AbortController().signal,
       ...options,
     };
     const { pageSize, timeoutMs, maxResponseBytes, maxAttempts } = this.options;
@@ -132,6 +135,7 @@ export class LeverAdapter implements PostingAdapter {
     // Pace every page, including the first, independently of retry backoff.
     await this.options.sleep(250);
     for (let attempt = 0; attempt < this.options.maxAttempts; attempt++) {
+      if (this.options.signal.aborted) throw new SourceError('ABORTED', 'Lever fetch was interrupted');
       try {
         const items = await this.request(url);
         return {
@@ -154,7 +158,7 @@ export class LeverAdapter implements PostingAdapter {
     const timer = setTimeout(() => controller.abort(), this.options.timeoutMs);
     try {
       const response = await this.options.fetch(url, {
-        method: 'GET', redirect: 'error', signal: controller.signal,
+        method: 'GET', redirect: 'error', signal: AbortSignal.any([controller.signal, this.options.signal]),
         headers: { Accept: 'application/json', 'User-Agent': 'CareerRadar/0.1 (+https://github.com/abhishekguha95/career-radar)' },
       });
       if (!response.ok) {
@@ -196,6 +200,7 @@ export class LeverAdapter implements PostingAdapter {
       if (payload.length > this.options.pageSize) throw new SourceError('MALFORMED_PAYLOAD', 'Lever response exceeds the requested page size');
       return payload;
     } catch (error) {
+      if (this.options.signal.aborted) throw new SourceError('ABORTED', 'Lever fetch was interrupted');
       if (controller.signal.aborted) throw new SourceError('TIMEOUT', 'Lever request timed out', true);
       throw error;
     } finally {

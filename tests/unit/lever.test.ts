@@ -99,6 +99,13 @@ describe('bounded Lever fetching', () => {
     });
     await expect(new LeverAdapter({ fetch, sleep: async () => {}, timeoutMs: 5, maxAttempts: 1 }).fetchPage(source, 0)).rejects.toMatchObject({ code: 'TIMEOUT' });
   });
+
+  it('does not retry a caller-cancelled request', async () => {
+    const controller = new AbortController();
+    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => { controller.abort(); throw new Error('Cancelled'); });
+    await expect(new LeverAdapter({ fetch, sleep: async () => {}, signal: controller.signal }).fetchPage(source, 0)).rejects.toMatchObject({ code: 'ABORTED' });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('offline fixtures', () => {
