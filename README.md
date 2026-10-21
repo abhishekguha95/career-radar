@@ -102,6 +102,6 @@ TEST_DATABASE_URL must name a dedicated database ending in `_test`. Tests create
 - `packages/core`: adapter, normalization, geography assessment and ingestion coordination.
 - `packages/database`: SQL repositories and migrations.
 - `fixtures/lever`: fictional, network-independent source data.
-- `docs`: [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [research](docs/OPEN_SOURCE_RESEARCH.md), [verification](docs/VERIFICATION.md).
+- `docs`: [system design walkthrough](docs/SYSTEM_DESIGN.md), [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [research](docs/OPEN_SOURCE_RESEARCH.md), [verification](docs/VERIFICATION.md).
 
 Current state: Phase 1 implemented; see verification and roadmap for completion evidence and the next review. Original code is MIT licensed; research inputs are not imported dependencies. Every implementation subtask has an incremental Git commit. No branch has been pushed or deployed.

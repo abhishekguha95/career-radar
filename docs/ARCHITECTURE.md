@@ -1,5 +1,7 @@
 # Architecture
 
+For an explanatory walkthrough following the Hello Interview framework, see [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md). This page is the concise architecture reference.
+
 Phase 1: a TypeScript modular monolith with two entry points and PostgreSQL. The API reads persisted data; the ingestion CLI shares normalization and database modules. No scheduler, queue, Redis, LLM, or UI service is required.
 
 ```text
