@@ -62,6 +62,27 @@ function literalPattern(value: string): string {
 export class JobsReader {
   constructor(private readonly pool: Pool) {}
 
+  async sources() {
+    const result = await this.pool.query<{
+      id: string; provider: string; region: string; site: string; mode: string; employer: string; health: string;
+      last_success_at: Date | null; job_count: number; remote_count: number; latest_run: JobRow<never>['run'] | null;
+    }>(`SELECT s.id,s.provider,s.region,s.site,s.mode,s.employer,s.health,s.last_success_at,
+      count(p.id)::integer AS job_count,
+      count(p.id) FILTER (WHERE p.workplace='REMOTE')::integer AS remote_count,
+      latest.run AS latest_run
+      FROM job_sources s LEFT JOIN job_postings p ON p.source_id=s.id
+      LEFT JOIN LATERAL (
+        SELECT jsonb_build_object('id',r.id,'status',r.status,'complete',r.complete,'startedAt',r.started_at,'finishedAt',r.finished_at) AS run
+        FROM ingestion_runs r WHERE r.source_id=s.id ORDER BY r.started_at DESC,r.id DESC LIMIT 1
+      ) latest ON true
+      GROUP BY s.id,latest.run ORDER BY s.employer,s.mode,s.id`);
+    return { data: result.rows.map((row) => ({
+      id: row.id, provider: row.provider, region: row.region, site: row.site, mode: row.mode, employer: row.employer,
+      health: row.health, lastSuccessfulRunAt: row.last_success_at?.toISOString() ?? null,
+      jobCount: row.job_count, remoteCount: row.remote_count, latestRun: row.latest_run,
+    })) };
+  }
+
   async list(query: JobsQuery) {
     const conditions: string[] = [];
     const values: unknown[] = [];

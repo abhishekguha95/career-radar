@@ -40,6 +40,7 @@ class ApiErrorFilter implements ExceptionFilter {
 class JobsService {
   private readonly reader: JobsReader;
   constructor(@Inject(DATABASE) pool: Pool) { this.reader = new JobsReader(pool); }
+  sources() { return this.reader.sources(); }
   list(input: unknown) {
     const query = jobsQuerySchema.safeParse(input);
     if (!query.success) throw new BadRequestException({ code: 'INVALID_QUERY', message: 'Query parameters failed validation', details: query.error.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message })) });
@@ -60,6 +61,13 @@ class JobsController {
   list(@Query() query: unknown) { return this.jobs.list(query); }
   @Get(':id')
   get(@Param('id') id: string) { return this.jobs.get(id); }
+}
+
+@Controller('sources')
+class SourcesController {
+  constructor(@Inject(JobsService) private readonly jobs: JobsService) {}
+  @Get()
+  list() { return this.jobs.sources(); }
 }
 
 @Controller()
@@ -84,7 +92,7 @@ class HealthController {
 @Module({})
 class ApiModule {
   static register(pool: Pool): DynamicModule {
-    return { module: ApiModule, controllers: [HealthController, JobsController], providers: [{ provide: DATABASE, useValue: pool }, JobsService] };
+    return { module: ApiModule, controllers: [HealthController, JobsController, SourcesController], providers: [{ provide: DATABASE, useValue: pool }, JobsService] };
   }
 }
 

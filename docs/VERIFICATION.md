@@ -73,4 +73,10 @@ The child CLI returns 2 for PARTIAL; nested pnpm script runners translated that 
 
 ## Limits of the evidence
 
+## Phase 2 increment 1: UI read boundary
+
+Phase 2 UI scope is approved in revised ROADMAP.md. Added shared runtime response contracts and GET /sources with database-wide posting/remote counts, health, and latest run metadata, including sources with no runs. `build`, `typecheck`, `lint`, and **43 PostgreSQL integration tests** passed. Contract checks validate the actual API payloads used by the frontend and reject unsafe link schemes.
+
+The in-app browser tool could not initialize (`sandbox-state-meta: missing field sandboxPolicy`), before any tab interaction. Local Chrome is installed; browser verification will use standalone Playwright as the documented fallback. No Site was registered or published.
+
 Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, real-employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure, fuzzy merges, or later-phase features were implemented.

@@ -92,3 +92,59 @@ export const jobsQuerySchema = z.object({
   mode: z.enum(['FIXTURE', 'LIVE']).optional(),
 }).strict();
 export type JobsQuery = z.infer<typeof jobsQuerySchema>;
+
+// Wire contracts shared by the API's consumers; validation keeps untrusted data out of links/UI state.
+const timestamp = z.iso.datetime({ offset: true });
+const safeWebUrl = z.url().refine((value) => {
+  const url = new URL(value);
+  return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password;
+}, 'Expected an HTTP(S) URL without credentials');
+const sourceViewSchema = z.object({
+  id: z.uuid(), provider: z.literal('LEVER'), region: z.enum(['global', 'eu']), site: z.string(),
+  mode: z.enum(['FIXTURE', 'LIVE']), health: z.enum(['UNKNOWN', 'HEALTHY', 'DEGRADED', 'UNAVAILABLE']),
+  lastSuccessfulRunAt: timestamp.nullable(),
+});
+const latestRunSchema = z.object({
+  id: z.uuid(), status: z.enum(['RUNNING', 'SUCCEEDED', 'PARTIAL', 'FAILED', 'ABORTED']),
+  complete: z.boolean(), startedAt: timestamp, finishedAt: timestamp.nullable(),
+});
+const eligibilityWireSchema = z.object({
+  context: z.literal('INDIA_REMOTE'), result: z.enum(['ELIGIBLE', 'INELIGIBLE', 'UNKNOWN']),
+  reasonCodes: z.array(z.string()), classifierVersion: z.string(), disclaimer: z.string(),
+  evidence: z.array(z.object({ text: z.string(), field: z.enum(['description', 'location']), start: z.number().int().nonnegative(), end: z.number().int().nonnegative(), sourceUrl: safeWebUrl, observedAt: timestamp })),
+});
+const provenanceWireSchema = z.object({
+  requestUrl: z.string(), observedAt: timestamp, mappingVersion: z.string(),
+  mode: z.enum(['FIXTURE', 'LIVE']), page: z.number().int().nonnegative(),
+});
+export const jobSummarySchema = z.object({
+  id: z.uuid(), opportunityId: z.uuid(), externalId: z.string(), employer: z.string(), title: z.string(),
+  location: z.string().nullable(), allLocations: z.array(z.string()), country: z.string().nullable(),
+  workplace: workplaceSchema, workplaceRaw: z.string().nullable(),
+  employmentType: z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP', 'TEMPORARY', 'UNKNOWN']), employmentTypeRaw: z.string().nullable(),
+  canonicalUrl: safeWebUrl, applyUrl: safeWebUrl.nullable(), postedAt: timestamp.nullable(), sourceUpdatedAt: timestamp.nullable(),
+  firstSeenAt: timestamp, lastSeenAt: timestamp, externalStatus: z.enum(['PUBLISHED', 'UNKNOWN', 'CLOSED']),
+  source: sourceViewSchema, latestRun: latestRunSchema, eligibility: eligibilityWireSchema.nullable(),
+});
+export const jobsResponseSchema = z.object({
+  data: z.array(jobSummarySchema),
+  pagination: z.object({ page: z.number().int().positive(), limit: z.number().int().positive().max(100), total: z.number().int().nonnegative(), totalPages: z.number().int().nonnegative(), hasNext: z.boolean() }),
+});
+export const jobDetailSchema = jobSummarySchema.extend({
+  description: z.string().nullable(),
+  provenance: z.object({
+    latestObservation: provenanceWireSchema,
+    currentSnapshot: provenanceWireSchema.extend({ id: z.uuid(), revision: z.number().int().positive(), raw: z.record(z.string(), z.unknown()), contentHash: z.string(), recordedAt: timestamp }),
+    history: z.object({ total: z.number().int().nonnegative(), hasMore: z.boolean(), data: z.array(z.object({ id: z.uuid(), revision: z.number().int().positive(), title: z.string(), observedAt: timestamp, mappingVersion: z.string(), contentHash: z.string() })) }),
+  }),
+});
+export const jobDetailResponseSchema = z.object({ data: jobDetailSchema });
+export const sourceStatusSchema = sourceViewSchema.extend({
+  employer: z.string(), jobCount: z.number().int().nonnegative(), remoteCount: z.number().int().nonnegative(),
+  latestRun: latestRunSchema.nullable(),
+});
+export const sourcesResponseSchema = z.object({ data: z.array(sourceStatusSchema) });
+export type JobSummary = z.infer<typeof jobSummarySchema>;
+export type JobsResponse = z.infer<typeof jobsResponseSchema>;
+export type JobDetail = z.infer<typeof jobDetailSchema>;
+export type SourceStatus = z.infer<typeof sourceStatusSchema>;

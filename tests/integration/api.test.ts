@@ -5,6 +5,7 @@ import { createApi } from '../../apps/api/src/app.js';
 import { FixtureAdapter, ingest, readFixture } from '../../packages/core/src/index.js';
 import { JobRepository } from '../../packages/database/src/index.js';
 import { testDatabase } from './helpers.js';
+import { jobDetailResponseSchema, jobsResponseSchema, sourcesResponseSchema } from '../../packages/contracts/src/index.js';
 
 describe('read-only HTTP API backed by PostgreSQL', () => {
   let db: Awaited<ReturnType<typeof testDatabase>>;
@@ -38,6 +39,7 @@ describe('read-only HTTP API backed by PostgreSQL', () => {
   it('paginates deterministically without overlapping records in a stable dataset', async () => {
     const first = (await request(app.getHttpServer()).get('/jobs?limit=2&page=1').expect(200)).body;
     const second = (await request(app.getHttpServer()).get('/jobs?limit=2&page=2').expect(200)).body;
+    expect(jobsResponseSchema.safeParse(first).success).toBe(true);
     expect(first.pagination).toEqual({ page: 1, limit: 2, total: 3, totalPages: 2, hasNext: true });
     expect(second.pagination).toMatchObject({ page: 2, total: 3, hasNext: false });
     expect(new Set([...first.data, ...second.data].map((job: { id: string }) => job.id)).size).toBe(3);
@@ -69,6 +71,8 @@ describe('read-only HTTP API backed by PostgreSQL', () => {
     const summary = (await request(app.getHttpServer()).get('/jobs?title=Senior').expect(200)).body.data[0];
     const response = await request(app.getHttpServer()).get(`/jobs/${summary.id}`).expect(200);
     const job = response.body.data;
+    expect(jobDetailResponseSchema.safeParse(response.body).success).toBe(true);
+    expect(jobDetailResponseSchema.safeParse({ data: { ...job, canonicalUrl: 'javascript:alert(1)' } }).success).toBe(false);
     expect(job).toMatchObject({ externalId: 'backend-001', source: { mode: 'FIXTURE' }, eligibility: { context: 'INDIA_REMOTE', result: 'ELIGIBLE', classifierVersion: 'india-remote-v1' } });
     expect(job.provenance.currentSnapshot.raw.id).toBe('backend-001');
     expect(job.provenance.currentSnapshot.mappingVersion).toBe('lever-v1');
@@ -110,5 +114,14 @@ describe('read-only HTTP API backed by PostgreSQL', () => {
     const result = await request(app.getHttpServer()).get('/jobs?location=Pune&workplace=HYBRID&title=Multi&mode=FIXTURE').expect(200);
     expect(result.body.pagination.total).toBe(1);
     expect(result.body.data[0].location).toBe('Stockholm');
+  });
+
+  it('returns source-wide counts, latest run state, and unrun sources without guessing health', async () => {
+    await new JobRepository(db.pool).upsertSource({ provider: 'LEVER', region: 'eu', site: 'fixture-empty', employer: 'Empty Source' }, 'LIVE');
+    const response = await request(app.getHttpServer()).get('/sources').expect(200);
+    const parsed = sourcesResponseSchema.parse(response.body);
+    expect(parsed.data.find((source) => source.id === sourceId)).toMatchObject({ mode: 'FIXTURE', jobCount: 3, remoteCount: 3, health: 'HEALTHY', latestRun: { status: 'SUCCEEDED', complete: true } });
+    expect(parsed.data.find((source) => source.site === 'fixture-empty')).toMatchObject({ mode: 'LIVE', jobCount: 0, health: 'UNKNOWN', latestRun: null, lastSuccessfulRunAt: null });
+    expect(parsed.data.reduce((sum, source) => sum + source.jobCount, 0)).toBe(4);
   });
 });
