@@ -93,6 +93,8 @@ Initial build found a malformed option tag, fixed before verification. The first
 
 Browser screenshots/traces and the one-off offline smoke script remain ignored local artifacts. No remote registration, hosting or deployment occurred. Browser checks ran against the development server; the separate offline check exercised the production server. A clean-source installation was verified in Phase 1; Phase 2's frozen install/build ran in the current checkout, not a new archive. No performance or full accessibility audit is claimed.
 
+Final cleanup check: no listeners remained on 3000, 3001, 3100, 3101 or 3102. The dedicated test database had zero schemas matching the generated UI prefix. Compose showed only PostgreSQL, healthy. The next frontend/backend start is explicit through the documented npm commands.
+
 ## Limits of the evidence
 
 Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, real-employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure, fuzzy merges, or later-phase features were implemented.

@@ -1,6 +1,6 @@
 # Working in Career Radar
 
-- Read docs/ROADMAP.md and docs/DECISIONS.md before changing scope. Phase 1 is complete. The owner approved Phase 2 as a local UI on 2026-10-21; coverage/profile/evaluation/ranking follow afterward.
+- Read docs/ROADMAP.md and docs/DECISIONS.md before changing scope. Phases 1 and 2 are complete and verified on 2026-10-21, including the local UI. Coverage/profile/evaluation/ranking follow afterward, with significant decisions discussed before implementation.
 - Discuss significant engineering decisions with alternatives, evidence, costs, and revisit conditions. Keep those records in docs/DECISIONS.md.
 - Implement small verified increments and make incremental commits when a subtask is complete, as requested by the owner. Never push, merge, deploy, spend money, contact others, or submit applications without authorization.
 - Preserve existing user files. Keep TypeScript strict; use explicit boundaries, validated inputs, SQL parameters, bounded fetches, and structured errors/logs.

@@ -1,8 +1,8 @@
 # Career Radar: system design walkthrough
 
-This explains the implemented Phase 1 system using the sequence in [Hello Interview's System Design Delivery Framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery): requirements, core entities, system interfaces, data flow, high-level design, and deep dives. The framework supplies the explanation structure; the design and tradeoffs below describe Career Radar's code.
+This explains the implemented system through Phase 2 using the sequence in [Hello Interview's System Design Delivery Framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery): requirements, core entities, system interfaces, data flow, high-level design, and deep dives. The framework supplies the explanation structure; the design and tradeoffs below describe Career Radar's code.
 
-Status: Phase 1 complete, 2026-10-21. Seven implementation/documentation commits established the working foundation. Build, strict type checks, lint, 51 unit tests, and 42 PostgreSQL integration tests passed, including a fresh-source setup. A bounded live read stored ten Lever demo postings. See [verification evidence](VERIFICATION.md) for exact commands and limitations.
+The Phase 1 foundation adds ingestion, history, geography and a read API. Phase 2 adds a local dashboard, source status and shared response validation. A bounded live read stored ten Lever demo postings. See [verification evidence](VERIFICATION.md) for actual build, unit, PostgreSQL and browser checks and their limitations.
 
 ## 1. Requirements
 
@@ -13,8 +13,9 @@ The initial system must let its operator:
 1. Collect published jobs from a configured employer's Lever account, or replay fictional offline fixtures through the same normalization path.
 2. Store consistent job records without duplicate postings, retain changes, and explain where each record came from.
 3. Query/filter those records and inspect a conservative India-remote geography signal with supporting evidence.
+4. Browse those records in a responsive local UI, inspect history, and review source health without triggering a crawl.
 
-The broader product will evaluate candidate fit and career value. Profiles, ranking, applications, resumes, and a dashboard belong to later reviewed phases.
+The broader product will evaluate candidate fit and career value. Profiles, ranking, applications and resumes belong to later reviewed phases.
 
 ### Non-functional requirements
 
@@ -64,6 +65,7 @@ The schema is implemented in [the initial migration](../packages/database/migrat
 | `GET /health` | Report that the API process is alive. |
 | `GET /ready` | Verify database access and required migration fields; return 503 if unavailable. |
 | `GET /jobs` | Return filtered, paginated summaries. |
+| `GET /sources` | Return whole-source counts, health, latest run and completeness, including configured sources with no runs. |
 | `GET /jobs/:id` | Return description, source/run context, geography evidence, raw current provenance, and recent history metadata. |
 
 Example:
@@ -91,7 +93,7 @@ There is no ingestion HTTP endpoint or persistent job scheduler in Phase 1.
 
 ## 4. Data flow and high-level design
 
-Career Radar is a **TypeScript modular monolith with two executable entry points**. The API and ingestion CLI share code and a database, while running as separate host processes.
+Career Radar has a **TypeScript API and ingestion CLI sharing domain modules**, plus a Next.js frontend. All JavaScript processes run on the host; PostgreSQL runs in Compose.
 
 ```mermaid
 flowchart LR
@@ -101,7 +103,9 @@ flowchart LR
     Fixture[Fictional local fixture] -->|File read| Ingest
     Ingest --> Core[Normalize and assess in process]
     Core -->|SQL writes over TCP| DB[(PostgreSQL in Docker)]
-    Client[Local API client] -->|HTTP GET / JSON| API[NestJS API on host]
+    Browser[Browser] -->|HTTP pages and navigation| Web[Next.js on host]
+    Web -->|Server HTTP GET / JSON| API[NestJS API on host]
+    Client[Optional local API client] -->|HTTP GET / JSON| API
     API -->|SQL reads over TCP| DB
 ```
 
@@ -109,12 +113,15 @@ flowchart LR
 
 | Component | Lifecycle and responsibility | Communication |
 | --- | --- | --- |
+| UI process | Next.js server renders browsing pages; client components handle forms and tabs. | Browser HTTP on 127.0.0.1:3000; server-only HTTP reads to the API. |
 | API process | Long-running NestJS process; validates requests and reads stored jobs. | Local HTTP on 127.0.0.1:3001; PostgreSQL via `pg`. |
 | Ingestion process | Short-lived CLI; owns one crawl/replay and its outcome. | HTTPS to fixed Lever hosts or local fixture reads; PostgreSQL via `pg`. |
 | PostgreSQL | Long-running Compose service; stores domain state and coordinates locks. | Host port 127.0.0.1:54329 maps to container port 5432. |
 | Lever | External employer ATS API; publishes source data. | Paginated JSON over HTTPS. |
 
 The CLI does not call the HTTP API, and the API does not call the CLI. They communicate indirectly through committed PostgreSQL state. Within either Node.js process, module calls are ordinary function calls; no internal HTTP, RPC, or message broker is needed.
+
+The frontend calls the API without accessing PostgreSQL. Its private API origin is restricted to loopback for local development; no browser CORS configuration is required. Refresh reads the database again through the API. It does not fetch new jobs from Lever.
 
 ### Code boundaries
 
@@ -123,6 +130,7 @@ The CLI does not call the HTTP API, and the API does not call the CLI. They comm
 - [database](../packages/database/src/index.ts): migrations, transaction/locking logic, persistence and read queries.
 - [API entry point](../apps/api/src/app.ts): NestJS composition, routes, validation and error envelopes.
 - [ingestion entry point](../apps/ingest/src/main.ts): command parsing, environment, adapter/store wiring and exit codes.
+- [frontend](../apps/web/src/app/page.tsx): dashboard pages, URL-based filters and selected posting, evidence/history inspector and source status.
 
 The ingestion coordinator depends on an `IngestionStore` interface. The PostgreSQL repository satisfies that interface; core domain orchestration does not import a concrete database implementation.
 
@@ -137,9 +145,10 @@ The ingestion coordinator depends on an `IngestionStore` interface. The PostgreS
 
 ### Read flow
 
-1. Validate the HTTP path/query.
-2. Execute parameterized SQL against stored state.
-3. Return summaries or detail with provenance and a request ID.
+1. The browser requests a frontend page with filters and optional posting ID in the URL.
+2. Next.js validates those parameters and makes uncached, timed API reads for jobs, sources and selected detail.
+3. The API validates paths/queries and executes parameterized SQL against stored state.
+4. Next.js validates JSON using shared runtime response schemas and renders summaries or detail, with local empty/error states when needed.
 
 A read request does not trigger a source crawl. That keeps API response behavior independent of external ATS latency and availability.
 
@@ -217,6 +226,14 @@ Live fetches use 250 ms pacing, a 10-second timeout per attempt, an 8 MiB body l
 
 Source text is untrusted data. HTML is converted to text, raw payloads remain evidence, and no source instructions execute. The HTTP API returns JSON with validation, request IDs, no-store/nosniff headers and sanitized internal errors. It currently relies on loopback isolation; shared hosting needs authentication and a separate security review.
 
+### G. UI state, honest counts and tradeoffs
+
+Filters, page number and selected posting live in the URL, making views reloadable and shareable locally. Inspector tabs are temporary client state. The frontend defaults to six results per page; the API's independent default remains 20. On a narrow screen, choosing a posting reveals its inspector below the list.
+
+Workspace metrics aggregate all sources through GET /sources, rather than counting the current filtered page. Source cards show partial/failed/unrun states. Posting cards label sample data, provider demo data and live sources separately. Geography signals remain separate from career fit; the UI does not invent scores.
+
+Next.js adds a server process and framework dependency compared with a static Vite client. In return it provides server-rendered pages and keeps API reads in one server boundary without CORS or client-side request orchestration. Reads use no-store and a five-second timeout. Jobs, source counts and detail are separate requests, so they are not one atomic dashboard snapshot during concurrent ingestion. That is acceptable for the current local browsing workflow; a combined read endpoint is an option if stronger consistency becomes useful.
+
 ## 6. Evolution points to discuss later
 
 | Addition | Evidence that would justify it | What can remain |
@@ -225,6 +242,6 @@ Source text is untrusted data. HTML is converted to text, raw payloads remain ev
 | Redis/BullMQ | Durable scheduling, queued retries or multiple background workers become necessary. | PostgreSQL as source of truth; idempotent posting writes and run records. |
 | Another ATS connector | Actual target-employer coverage demonstrates value. | Adapter interface, normalized model, persistence and API. |
 | Better search/pagination | Measured query cost or changing-data pagination harms the workflow. | Existing entities and evidence model; add indexes/keyset pagination deliberately. |
-| Candidate profile and ranking | Phase 2 plan and labeled examples are reviewed. | Geography evidence, source history and separation of eligibility from relevance. |
+| Candidate profile and ranking | Phase 3 plan and labeled examples are reviewed. | Geography evidence, source history and separation of eligibility from relevance. |
 
 These are future discussion points, not implemented components. The current architecture keeps the main failure modes visible while establishing a small working ingestion and provenance foundation. Broader decisions and alternatives are recorded in [DECISIONS.md](DECISIONS.md); local commands are in the [README](../README.md).

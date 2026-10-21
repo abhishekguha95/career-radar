@@ -20,12 +20,14 @@ Phase 1 plan approved 2026-10-21. Work proceeds in independently verified commit
 5. Narrow India-remote geography signal, read-only API, contract tests.
 6. Clean developer-journey verification and completed documentation.
 
-Current state: **Phase 1 complete and verified**, 2026-10-21. Fresh-source install/build/migrations, 51 unit tests, 42 PostgreSQL integration tests, deterministic replays, compiled API queries, and a bounded live read passed. See VERIFICATION.md for evidence and limitations. **Phase 2 UI is now approved and in progress**, superseding the earlier ordering. Compose still runs PostgreSQL only; application processes run on the host.
+Current state: **Phases 1 and 2 complete and verified**, 2026-10-21. Phase 1 established ingestion and its fresh-source acceptance. Phase 2 adds responsive job browsing, filters, details, evidence/history, source status and npm startup commands. Current checks: production build, strict type checks, lint, 59 unit tests, 43 PostgreSQL integration tests and 8 desktop/mobile browser tests passed. A separate production-server check verified backend-unavailable recovery. See VERIFICATION.md for evidence and limitations. Compose still runs PostgreSQL only; application processes run on the host.
 
 ## Phase 2 increments
 1. Record revised scope and frontend/API boundary decisions.
 2. Add typed read contracts and a read-only source-status endpoint; verify with PostgreSQL contract tests.
 3. Build the local Next.js dashboard, job inspector, sources view, responsive states, and npm startup aliases.
 4. Verify browser flows, production build, existing checks and startup commands; document results and commit.
+
+All four increments are complete. Local commits: `1fbdf94` records the scope, `991b051` adds the typed read/source boundary, and `6b7172d` adds the UI and its verification. The final documentation increment updates this roadmap, the README, architecture and Hello Interview walkthrough. Temporary UI servers were stopped and generated UI-test schemas removed; PostgreSQL remains healthy. Start the app with `npm run backend` and `npm run frontend` in separate terminals.
 
 After the UI: proceed to employer coverage research, profile requirements, a reviewed real-posting evaluation set, and baseline-ranking design. Discuss significant decisions before implementing the next phase. No paid APIs, automatic applications, publishing, extra infrastructure or fabricated fit scores are included in Phase 2. No remote branch has been pushed or deployed.
