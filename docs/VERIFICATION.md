@@ -95,10 +95,38 @@ Browser screenshots/traces and the one-off offline smoke script remain ignored l
 
 Final cleanup check: no listeners remained on 3000, 3001, 3100, 3101 or 3102. The dedicated test database had zero schemas matching the generated UI prefix. Compose showed only PostgreSQL, healthy. The next frontend/backend start is explicit through the documented npm commands.
 
+## Phase 3A: employer coverage and Greenhouse integration
+
+2026-10-22, Asia/Kolkata. Added the eight-employer coverage report, original GET-only Greenhouse adapter, shared bounded JSON transport/plain-text helpers, runtime provider contracts, CLI provider selection, fictional Greenhouse fixtures and third migration. Existing exact identities, per-posting transactions, snapshots and no-auto-closure behavior remain. The UI provider-demo check now includes provider identity.
+
+- `npm run build`: passed across all six workspaces, including Next.js production compilation.
+- `npm run typecheck`: passed after rebuilding exports. The first attempt read an old compiled core export and failed on the new adapter import; the post-build rerun passed.
+- `npm run lint`: passed.
+- `npm test`: **94 tests in 4 files passed**. New cases cover source/provider validation, safe numeric posting identity, unknown fields, timestamps, direct/entity-escaped HTML, full-board envelope reconciliation, duplicate IDs, request host and limits, Retry-After and cancellation.
+- `npm run test:integration`: **51 tests in 4 files passed** against isolated PostgreSQL schemas. New cases cover idempotency, same internal job ID across distinct postings, preserved evidence/history, provider/mode separation, SQL constraints, additional office locations, undated roles, malformed neighbors and incomplete/failed feed preservation.
+- `node apps/ingest/dist/main.js --help`: passed; documents default Lever, Greenhouse, regional constraints and provider-specific bounds.
+- `npm run db:migrate`: applied the third migration to the existing development database. A read-only audit before import confirmed the original two sources still had exactly 13 postings and 13 snapshots.
+
+The first browser launch was blocked by an existing Next.js development server in this checkout. No user process was terminated. After the owner stopped their servers, the suite ran through the existing startup commands and passed all ten desktop/mobile cases, including Greenhouse source browsing, text, source filtering, provider/mapping provenance and unknown geography. A Playwright screenshot temporarily hiding input carets caused a hydration console warning during capture; the screenshot now leaves carets unchanged. The final repeat and its cleanup are recorded below.
+
+Final `npm run test:ui` repeat: **10 passed (1.4 minutes)**, with no hydration warning. Reviewed desktop/mobile screenshots; the existing overflow/page-error assertions passed. Lint and the root TypeScript check also passed after the final screenshot-test adjustment. Cleanup audit found zero generated integration/UI schemas and no listeners on 3000, 3001, 3100 or 3101. User-stopped development servers remain stopped.
+
+Separate bounded live collection and replay, using the compiled CLI (exit 0 for all six runs):
+
+| Employer | Source ID | First collection | Repeat | Stored postings / snapshots after repeat |
+| --- | --- | --- | --- | --- |
+| Grafana Labs | `1d4be251-9336-41c8-a802-7f886a8beec9` | SUCCEEDED/complete; fetched=accepted=created=143, rejected=0 | SUCCEEDED/complete; unchanged=143, created=updated=rejected=0 | 143 / 143 |
+| Razorpay | `7c5b07df-3c91-40a4-af89-e8d9502f3af0` | SUCCEEDED/complete; fetched=accepted=created=26, rejected=0 | SUCCEEDED/complete; unchanged=26, created=updated=rejected=0 | 26 / 26 |
+| Wolt | `6b04d484-5531-4754-941b-2f42b49bf3bc` | SUCCEEDED/complete; fetched=accepted=created=202, rejected=0 | SUCCEEDED/complete; unchanged=202, created=updated=rejected=0 | 202 / 202 |
+
+All three sources are HEALTHY. All 371 stored employer summaries were paged through the read layer and validated against the shared list contract; source responses and a current detail/snapshot per employer also validated. This live audit exercised the database read layer, while the isolated integration/browser tests exercised HTTP/UI contracts. The working database contains 384 postings and 384 snapshots in total: 371 employer records plus the unchanged 3 fictional and 10 provider-demo records. Raw employer descriptions/payloads are retained only in local PostgreSQL, not committed fixtures. Collection counts include all roles and geographies; no candidate fit, live-link-per-role, sponsorship or geography-accuracy benchmark is claimed.
+
+Greenhouse workplace, country and employment-type fields remain UNKNOWN/null where there is no implemented structured mapping. Exact-source browsing is available through Sources; overview metrics and the LIVE filter still include demo data. No combined demo-free shortlist, private profile, ranker, new eligibility context, automatic discovery or daily trigger was implemented in this increment.
+
 ## Limits of the evidence
 
 2026-10-22 Phase 3A research: eight-employer coverage matrix added in EMPLOYER_COVERAGE.md, with unresolved integrations recorded rather than guessed. Bounded read-only GETs to the employer-linked Greenhouse feeds returned Grafana 143/143 records (2,239,464 bytes), Razorpay 26/26 (378,269 bytes), and Wolt 202/202 (2,394,562 bytes). No database import, raw posting artifact, new dependency or application change in this research increment. Diff whitespace checks passed; application checks were not rerun for these research documents. Scheduler/ranking behavior remains unimplemented.
 
 2026-10-22 planning update: daily cadence and repeat/coverage requirements are recorded in ROADMAP, DECISIONS (D019) and PHASE_3_HANDOVER. Reviewed existing persistence and ingestion code plus integration test cases for exact identity, unchanged observations, snapshots and page-limit outcomes. No application code, database contents or active schedules changed. Build, lint, typecheck, unit, PostgreSQL integration and browser suites were not rerun for this documentation-only update; the earlier pass counts remain historical. No daily scheduler, briefing-history behavior or completeness guarantee is verified by this update.
 
-Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, real-employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure, fuzzy merges, or later-phase features were implemented.
+Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, broad employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure or fuzzy merges were implemented; Phase 3 work beyond the documented provider/coverage increment remains pending.

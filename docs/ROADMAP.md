@@ -34,7 +34,9 @@ After the UI: proceed to employer coverage research, profile requirements, a rev
 
 ## Phase 3 daily search requirements
 
-Phase 3A progress, 2026-10-22: the [employer coverage pilot](EMPLOYER_COVERAGE.md) establishes three verified Greenhouse boards, one Lever board, one unsupported Ashby board and three unresolved integrations. D020 records the authorized Greenhouse increment; implementation and fresh verification follow. Employer feeds and preliminary track relevance are not an eligibility verdict or ranked shortlist.
+Phase 3A progress, 2026-10-22: the [employer coverage pilot](EMPLOYER_COVERAGE.md) establishes three verified Greenhouse boards, one Lever board, one unsupported Ashby board and three unresolved integrations. D020's Greenhouse adapter, shared transport, provider contracts, CLI selection and third migration are implemented. The local database now retains 371 employer postings from Grafana, Razorpay and Wolt; repeat collections created zero additional postings or snapshots. Existing 13 sample/provider-demo records remain intact. See VERIFICATION for current checks. Employer feeds and preliminary track relevance are not an eligibility verdict or ranked shortlist.
+
+Next bounded work: review a private profile/search-track format and independent eligibility/evidence contracts using actual postings, and agree combined real-search/demo separation. Complete that review before ranking or new eligibility rules. Ashby, source discovery, daily scheduling and briefing-history implementation remain pending; the daily requirement below is not an active trigger.
 
 Owner update, 2026-10-22 (Asia/Kolkata): both **India & Global Remote** and **Europe Relocation** should run every morning, replacing the earlier Tuesday/Friday and Monday/Thursday schedules. They remain separate search tracks. Thursday's Europe accountability check remains Thursday-only. Exact time and scheduler mechanism are pending; no daily trigger is configured by this documentation change. Candidate facts and detailed personal profile configuration stay out of Git.
 

@@ -1,8 +1,10 @@
 # Career Radar: system design walkthrough
 
-This explains the implemented system through Phase 2 using the sequence in [Hello Interview's System Design Delivery Framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery): requirements, core entities, system interfaces, data flow, high-level design, and deep dives. The framework supplies the explanation structure; the design and tradeoffs below describe Career Radar's code.
+This explains the implemented system through Phase 2, with the Phase 3A provider extension noted below, using the sequence in [Hello Interview's System Design Delivery Framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery): requirements, core entities, system interfaces, data flow, high-level design, and deep dives. The framework supplies the explanation structure; the design and tradeoffs below describe Career Radar's code.
 
 The Phase 1 foundation adds ingestion, history, geography and a read API. Phase 2 adds a local dashboard, source status and shared response validation. A bounded live read stored ten Lever demo postings. See [verification evidence](VERIFICATION.md) for actual build, unit, PostgreSQL and browser checks and their limitations.
+
+Phase 3A adds an original Greenhouse public Job Board adapter following the [employer coverage study](EMPLOYER_COVERAGE.md). It shares GET transport protections with Lever and reuses posting transactions, history and API/UI boundaries. Greenhouse supplies one bounded full-board envelope rather than Lever-style pages; count reconciliation and duplicate-ID checks prevent false complete runs. Use numeric posting IDs as string identities, source-supplied first-published/updated dates, and UNKNOWN for unsupported attributes. A third constraint migration permits the provider without adding domain tables. The Lever-specific examples and diagram below describe the original flow; Greenhouse uses the same ingestion path with its own fixed API host. Profiles, ranking, automatic discovery and daily scheduling remain unimplemented.
 
 ## 1. Requirements
 
@@ -220,7 +222,7 @@ List queries omit descriptions and raw payloads. Detail returns the current raw 
 
 ### F. External access, untrusted data and resource limits
 
-The adapter accepts a validated site identifier and configured region. It constructs requests only to Lever's fixed global/EU API hosts; it does not fetch arbitrary submitted URLs or follow redirects.
+Each adapter accepts a validated site identifier and configured region. Lever constructs requests to its fixed global/EU API hosts; Greenhouse uses the fixed documented `boards-api.greenhouse.io` endpoint with region `global`. Neither fetches arbitrary submitted URLs or follows redirects.
 
 Live fetches use 250 ms pacing, a 10-second timeout per attempt, an 8 MiB body limit, and at most three attempts. Retryable failures use backoff/jitter. A Retry-After longer than the permitted wait stops the crawl instead of causing an early retry. Access restrictions are terminal errors; there is no anti-bot evasion.
 

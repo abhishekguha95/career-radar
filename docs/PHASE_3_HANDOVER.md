@@ -4,6 +4,8 @@ Prepared 2026-10-21 against completed application revision `359092e`. Phases 1 a
 
 Owner update, 2026-10-22: use separate India & Global Remote and Europe Relocation tracks, each running daily in the morning, Asia/Kolkata. Daily supersedes the initially supplied weekday schedules. Preserve repeat observations without duplicate postings, and keep collection coverage independent of the briefing limit. See [ROADMAP daily search requirements](ROADMAP.md#phase-3-daily-search-requirements) and D019 in [DECISIONS](DECISIONS.md). This is a reviewed cadence requirement; scheduling and briefing-history implementation remain pending. Daily polling does not guarantee capture of every vacancy.
 
+Implementation update, 2026-10-22: the [coverage pilot](EMPLOYER_COVERAGE.md) and D020 now add Greenhouse alongside Lever. Three verified employer feeds have been collected and replayed without duplicate postings/history; real payloads remain local in PostgreSQL. The original baseline descriptions below are historical. See [ROADMAP](ROADMAP.md) and [VERIFICATION](VERIFICATION.md) for current state and checks. Profiles, ranking, combined real-search/demo separation and scheduling remain pending.
+
 ## Start here
 
 The next useful outcome is **a small set of actual target-employer postings, followed by an explainable shortlist for an explicitly reviewed search profile**. Establish useful coverage before building matching sophistication.

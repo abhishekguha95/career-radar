@@ -32,7 +32,8 @@ export class JobRepository {
       ON CONFLICT (provider, region, site, mode) DO UPDATE
         SET employer=EXCLUDED.employer, configuration=EXCLUDED.configuration
       RETURNING id`, [config.provider, config.region, config.site, mode, config.employer, config, {
-      documentationUrl: 'https://github.com/lever/postings-api', reviewedAt: '2026-10-21',
+      documentationUrl: config.provider === 'GREENHOUSE' ? 'https://docs.greenhouse.io/job-board.html' : 'https://github.com/lever/postings-api',
+      reviewedAt: config.provider === 'GREENHOUSE' ? '2026-10-22' : '2026-10-21',
       requestIntervalMs: 250, maxAttempts: 3, timeoutMs: 10_000, maxResponseBytes: 8 * 1024 * 1024,
       closurePolicy: 'NO_AUTOMATIC_CLOSURE',
     }]);

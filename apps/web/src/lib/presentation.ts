@@ -42,8 +42,8 @@ export function observedAgo(value: string, now: string): string {
   if (minutes < 1440) return `${Math.floor(minutes / 60)}h ago`;
   return `${Math.floor(minutes / 1440)}d ago`;
 }
-export function sourceLabel(source: Pick<SourceStatus, 'mode' | 'site'>): string {
-  return source.mode === 'FIXTURE' ? 'Sample data' : source.site === 'leverdemo' ? 'Provider demo' : 'Live source';
+export function sourceLabel(source: Pick<SourceStatus, 'provider' | 'mode' | 'site'>): string {
+  return source.mode === 'FIXTURE' ? 'Sample data' : source.provider === 'LEVER' && source.site === 'leverdemo' ? 'Provider demo' : 'Live source';
 }
 export const workplaceLabel = (value: JobSummary['workplace']) => ({ REMOTE: 'Remote', HYBRID: 'Hybrid', ON_SITE: 'On-site', UNKNOWN: 'Workplace unspecified' })[value];
 export const employmentLabel = (value: JobSummary['employmentType']) => ({ FULL_TIME: 'Full-time', PART_TIME: 'Part-time', CONTRACT: 'Contract', INTERNSHIP: 'Internship', TEMPORARY: 'Temporary', UNKNOWN: 'Type unspecified' })[value];

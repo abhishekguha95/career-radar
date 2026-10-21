@@ -5,10 +5,10 @@ test('browses stored jobs with clear sample labels and captures the dashboard', 
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Opportunity radar', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '3 opportunities', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '6 opportunities', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'View Senior Backend Engineer - Platform at Northstar Fictional Systems', exact: true })).toBeVisible();
   await expect(page.getByLabel('Workspace totals')).toContainText('Stored postings');
-  await page.screenshot({ path: `test-results/career-radar-${testInfo.project.name}.png`, fullPage: true });
+  await page.screenshot({ path: `test-results/career-radar-${testInfo.project.name}.png`, fullPage: true, caret: 'initial' });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   expect(overflow).toBe(false);
   expect(errors).toEqual([]);
@@ -21,8 +21,8 @@ test('searches titles, clears filters, and paginates a stable fixture set', asyn
   await expect(page.getByRole('heading', { name: '1 opportunity', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'View Distributed Systems Engineer at Northstar Fictional Systems', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Clear filters', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '3 opportunities', exact: true })).toBeVisible();
-  await page.goto('/?limit=2');
+  await expect(page.getByRole('heading', { name: '6 opportunities', exact: true })).toBeVisible();
+  await page.goto('/?limit=4');
   await expect(page.getByLabel('Pagination')).toContainText('Page 1 of 2');
   await page.getByRole('link', { name: 'Next page', exact: true }).click();
   await expect(page.getByLabel('Pagination')).toContainText('Page 2 of 2');
@@ -42,6 +42,25 @@ test('opens explicit evidence, preserved history and safe original links', async
   await expect(page.getByRole('tabpanel')).toContainText('Version 1');
   await expect(page.getByRole('link', { name: 'View original posting', exact: true })).toHaveAttribute('href', 'https://jobs.example.com/northstar/backend-001');
   await expect(page.getByRole('link', { name: 'View original posting', exact: true })).toHaveAttribute('rel', 'noopener noreferrer');
+});
+
+test('browses a Greenhouse source with unknown attributes and preserved evidence', async ({ page }) => {
+  await page.goto('/sources');
+  const source = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Orbit Fictional Systems', exact: true }) });
+  await expect(source).toContainText('greenhouse');
+  await expect(source).toContainText('Sample data');
+  await source.getByRole('link', { name: 'Browse postings', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '3 opportunities', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: /at Northstar Fictional Systems/ })).toHaveCount(0);
+  await page.getByRole('link', { name: 'View Senior Platform Engineer at Orbit Fictional Systems', exact: true }).click();
+  const detail = page.getByLabel('Posting details');
+  await expect(detail.getByRole('heading', { name: 'Senior Platform Engineer', exact: true })).toBeVisible();
+  await expect(detail).toContainText('Relocation assistance may be available.');
+  await page.getByRole('tab', { name: 'Evidence', exact: true }).click();
+  await expect(page.getByRole('tabpanel')).toContainText('GREENHOUSE');
+  await expect(page.getByRole('tabpanel')).toContainText('greenhouse-v1');
+  await expect(page.getByRole('tabpanel')).toContainText('Needs verification');
+  await expect(page.getByRole('link', { name: 'View original posting', exact: true })).toHaveAttribute('href', 'https://jobs.example.com/orbit/102');
 });
 
 test('shows empty results, invalid filters and unrun source state honestly', async ({ page }) => {

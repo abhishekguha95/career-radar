@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { SourceError } from './adapter.js';
 import type { PostingAdapter, SourcePage } from './adapter.js';
 import { LEVER_MAPPING_VERSION, normalizeLever } from './lever.js';
+import { GREENHOUSE_MAPPING_VERSION, normalizeGreenhouse } from './greenhouse.js';
 
 const fixtureSchema = z.object({
   source: sourceConfigSchema,
@@ -30,7 +31,9 @@ export class FixtureAdapter implements PostingAdapter {
     this.fixture = fixtureSchema.parse(fixture);
   }
 
-  normalize = normalizeLever;
+  normalize(raw: unknown, source: SourceConfig, provenance: SourcePage['provenance']) {
+    return source.provider === 'GREENHOUSE' ? normalizeGreenhouse(raw, source, provenance) : normalizeLever(raw, source, provenance);
+  }
 
   async fetchPage(source: SourceConfig, page: number): Promise<SourcePage> {
     if (JSON.stringify(sourceConfigSchema.parse(source)) !== JSON.stringify(this.fixture.source)) {
@@ -43,9 +46,9 @@ export class FixtureAdapter implements PostingAdapter {
       items: item.items,
       hasMore: page + 1 < this.fixture.pages.length,
       provenance: {
-        requestUrl: `fixture://lever/${this.fixture.source.region}/${this.fixture.source.site}?page=${page}`,
+        requestUrl: `fixture://${source.provider.toLowerCase()}/${this.fixture.source.region}/${this.fixture.source.site}?page=${page}`,
         observedAt: this.fixture.observedAt,
-        mappingVersion: LEVER_MAPPING_VERSION,
+        mappingVersion: source.provider === 'GREENHOUSE' ? GREENHOUSE_MAPPING_VERSION : LEVER_MAPPING_VERSION,
         mode: 'FIXTURE', page,
       },
     };

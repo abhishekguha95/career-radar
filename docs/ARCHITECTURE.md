@@ -5,7 +5,7 @@ For an explanatory walkthrough following the Hello Interview framework, see [SYS
 Phases 1–2: a TypeScript modular monolith with API and ingestion entry points, PostgreSQL, and a separate Next.js UI process. The API reads persisted data; the ingestion CLI shares normalization and database modules. Next.js reads the API on the server. No scheduler, queue, Redis or LLM is required.
 
 ```text
-Configured Lever site / fictional fixture
+Configured Lever site / Greenhouse board / fictional fixture
   -> bounded fetch / fixture reader
   -> payload validation -> normalization
   -> transaction per posting
@@ -35,7 +35,9 @@ Unknown source dates and attributes stay null/unknown. Observation freshness is 
 
 Each source has a session advisory lock, released on completion or connection loss. Each posting transaction also locks its exact source/ID, preventing concurrent duplicate inserts and orphan opportunities. Malformed records are rejected individually. Unknown persistence failures stop the crawl; expected older-content rejections can continue. Run outcomes distinguish complete enumeration from error-free processing: a complete crawl containing malformed records can still be PARTIAL. Error samples are capped at 50; counters retain total accepted/rejected records. An interrupted process can leave RUNNING until the next locked run marks it ABORTED; unfinalized counters may underreport committed records.
 
-Live requests are GET-only against fixed Lever API hosts. Source identifiers are validated. Redirects, excessive payloads, timeouts and retry exhaustion are errors; no fetched instructions execute. HTML is converted to text before display/classification. Raw source content is retained as evidence, not executable markup.
+Live requests are GET-only against fixed Lever API hosts or Greenhouse's documented `boards-api.greenhouse.io` endpoint. Both adapters share bounded JSON transport and plain-text conversion. Source identifiers are validated. Redirects, excessive payloads, timeouts and retry exhaustion are errors; no fetched instructions execute. HTML is converted to text before display/classification. Raw source content is retained as evidence, not executable markup.
+
+Phase 3A extends the provider constraint through a third migration, with no new domain tables. Greenhouse region is `global` for the verified endpoint regardless of job country. Its posting ID (not internal job ID) supplies identity. `content=true` returns a full-board envelope: compare record count with `meta.total` and detect duplicate IDs; mismatches preserve accepted records but report incomplete enumeration without refetching the same envelope as another page. Source-supplied first-published and updated timestamps remain separate. Nonstandard workplace/country/employment attributes stay unknown; they are not inferred from a remote title. The existing exact-source view supports employer pilots; combined demo-free search, profile matching and daily scheduling remain subsequent work.
 
 Implementation status and verification: see ROADMAP.md and VERIFICATION.md.
 

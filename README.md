@@ -1,6 +1,6 @@
 # Career Radar
 
-Local-first engineering job-search intelligence. Collect published jobs from Lever, preserve posting history in PostgreSQL, and browse them in a local dashboard with geography evidence and source status. No paid AI provider is required.
+Local-first engineering job-search intelligence. Collect published jobs from Lever and Greenhouse, preserve posting history in PostgreSQL, and browse them in a local dashboard with geography evidence and source status. No paid AI provider is required.
 
 ## Prerequisites
 
@@ -73,13 +73,25 @@ After the baseline replay, `npm run ingest -- --fixture fixtures/lever/changed.j
 ## Live collection
 
 ```powershell
-# Bounded example using Lever's documented demo site:
-npm run ingest -- --site leverdemo --employer "Lever Demo" --region global --max-pages 1 --page-size 10
+# Build after a fresh checkout or provider update, then apply pending migrations:
+npm run build
+npm run db:migrate
+# Employer-linked public Greenhouse boards verified in the coverage pilot:
+npm run ingest -- --provider greenhouse --site grafanalabs --employer "Grafana Labs"
+npm run ingest -- --provider greenhouse --site wolt --employer "Wolt"
+# Existing Lever commands retain their default provider:
+npm run ingest -- --site spotify --employer "Spotify" --region global
 ```
 
-This deliberately bounded example reports PARTIAL if the page is full; committed records remain available. For your search, replace the demo site/employer with the employer's actual public Lever site identifier and display name. Use `--region eu` for a European instance. There is no automatic employer discovery yet.
+Use an independently verified employer board/site, not a guessed identifier. Lever supports `--region global|eu` and `--page-size 1..100`; Greenhouse uses only `global` (the API endpoint, not the hiring country), and rejects `--page-size` because its documented job list is a full-board envelope. There is no automatic employer discovery. See the [coverage study](docs/EMPLOYER_COVERAGE.md) for verified boards and unresolved gaps.
 
-Requests are GET-only with fixed provider hosts, 250 ms pacing, a 10-second timeout per attempt, an 8 MiB response limit, at most three attempts, and at most 100 pages. Long Retry-After values stop collection instead of retrying early. This connector covers configured employers using Lever; target-employer coverage has not yet been benchmarked against Greenhouse. No application submission endpoint is implemented.
+Requests are GET-only with fixed provider hosts, 250 ms pacing, a 10-second timeout per attempt, an 8 MiB response limit, at most three attempts, and at most 100 Lever pages. Long Retry-After values stop collection instead of retrying early. A full Lever page at the page cap is incomplete. Greenhouse validates its jobs envelope against `meta.total` and duplicate posting IDs; a mismatch is explicitly incomplete, with accepted records preserved. Byte/record caps and malformed responses are errors, never successful empty feeds. No application submission endpoint is implemented.
+
+Greenhouse posting IDs are independent of internal job IDs. Supplied `first_published` and `updated_at` remain separate; missing dates stay unknown. Its adapter does not infer country, work model or employment type from title/location text, so those normalized attributes remain UNKNOWN/null. In particular, a `workplace=REMOTE` filter can exclude Greenhouse records whose descriptions discuss remote work. Review the preserved text and narrow geography evidence separately.
+
+Open **Sources**, choose the employer, and use **Browse postings** for an exact-source view. This excludes demonstration sources from that job list; overview cards still describe the whole workspace. LIVE means network collection, not a guarantee of vacancy authenticity or eligibility. Existing demos are preserved. Optional provider demonstration: `npm run ingest -- --site leverdemo --employer "Lever Demo" --max-pages 1 --page-size 10` intentionally reports PARTIAL when its page is full.
+
+The fictional [Greenhouse fixture](fixtures/greenhouse/baseline.json) is available with `npm run ingest -- --fixture fixtures/greenhouse/baseline.json`; it is not needed to collect real employer data. Daily cadence is recorded in the roadmap; a scheduler, profile matching, ranking and briefing-history suppression are not yet implemented.
 
 ## Checks
 
@@ -98,7 +110,7 @@ TEST_DATABASE_URL must name a dedicated database ending in `_test`. Tests create
 
 ## Current limits
 
-- No ranking, candidate profiles, embeddings, LLMs, resume generation, email, applications, deployment, or additional ATS connectors.
+- No ranking, candidate profiles, embeddings, LLMs, resume generation, email, applications, deployment, daily scheduler, or ATS connectors beyond Lever and Greenhouse.
 - Geography rules recognize a small whitelist of explicit statements. Most real descriptions can remain UNKNOWN; no real-job precision/recall benchmark is claimed.
 - No fuzzy cross-source merging or automatic closure. A posting last observed as PUBLISHED can become stale; inspect lastSeenAt and source/run health.
 - Offset pagination is internally consistent per response; separate pages can shift during ingestion.
@@ -114,7 +126,7 @@ TEST_DATABASE_URL must name a dedicated database ending in `_test`. Tests create
 - `packages/contracts`: shared domain and boundary contracts.
 - `packages/core`: adapter, normalization, geography assessment and ingestion coordination.
 - `packages/database`: SQL repositories and migrations.
-- `fixtures/lever`: fictional, network-independent source data.
+- `fixtures/lever`, `fixtures/greenhouse`: fictional, network-independent source data.
 - `docs`: [system design walkthrough](docs/SYSTEM_DESIGN.md), [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [research](docs/OPEN_SOURCE_RESEARCH.md), [verification](docs/VERIFICATION.md).
 
 See verification and roadmap for completion evidence and the next review. The [Phase 3 handover](docs/PHASE_3_HANDOVER.md) covers real-employer coverage, profile requirements, evaluation and ranking proposals for the next implementation session. Original code is MIT licensed; research inputs are not imported dependencies. Implementation subtasks have incremental Git commits. No branch has been pushed or deployed.

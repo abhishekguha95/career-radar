@@ -1,8 +1,12 @@
 import { z } from 'zod';
 
-export const sourceConfigSchema = z.object({
-  provider: z.literal('LEVER'),
+export const sourceProviderSchema = z.enum(['LEVER', 'GREENHOUSE']);
+const sourceIdentitySchema = z.object({
+  provider: sourceProviderSchema,
   region: z.enum(['global', 'eu']),
+}).refine((source) => source.provider !== 'GREENHOUSE' || source.region === 'global', 'Greenhouse supports only the documented global board endpoint');
+
+export const sourceConfigSchema = sourceIdentitySchema.safeExtend({
   site: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/),
   employer: z.string().trim().min(1).max(200),
 }).strict();
@@ -99,8 +103,8 @@ const safeWebUrl = z.url().refine((value) => {
   const url = new URL(value);
   return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password;
 }, 'Expected an HTTP(S) URL without credentials');
-const sourceViewSchema = z.object({
-  id: z.uuid(), provider: z.literal('LEVER'), region: z.enum(['global', 'eu']), site: z.string(),
+const sourceViewSchema = sourceIdentitySchema.safeExtend({
+  id: z.uuid(), site: z.string(),
   mode: z.enum(['FIXTURE', 'LIVE']), health: z.enum(['UNKNOWN', 'HEALTHY', 'DEGRADED', 'UNAVAILABLE']),
   lastSuccessfulRunAt: timestamp.nullable(),
 });
@@ -139,7 +143,7 @@ export const jobDetailSchema = jobSummarySchema.extend({
   }),
 });
 export const jobDetailResponseSchema = z.object({ data: jobDetailSchema });
-export const sourceStatusSchema = sourceViewSchema.extend({
+export const sourceStatusSchema = sourceViewSchema.safeExtend({
   employer: z.string(), jobCount: z.number().int().nonnegative(), remoteCount: z.number().int().nonnegative(),
   latestRun: latestRunSchema.nullable(),
 });

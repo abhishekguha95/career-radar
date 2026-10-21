@@ -1,0 +1,9 @@
+{
+  "source": { "provider": "GREENHOUSE", "region": "global", "site": "fixture-orbit", "employer": "Orbit Fictional Systems" },
+  "observedAt": "2026-10-22T04:00:00.000Z",
+  "pages": [{ "items": [
+    { "id": 101, "internal_job_id": 900, "title": "Senior Backend Engineer", "absolute_url": "https://jobs.example.com/orbit/101", "content": "<p>Build reliable Node.js services.</p><p>Work remotely from India.</p>", "location": { "name": "India" }, "first_published": "2026-10-20T10:00:00Z", "updated_at": "2026-10-21T10:00:00Z" },
+    { "id": 102, "internal_job_id": 900, "title": "Senior Platform Engineer", "absolute_url": "https://jobs.example.com/orbit/102", "content": "&lt;p&gt;Build distributed services.&lt;/p&gt;&lt;p&gt;Relocation assistance may be available.&lt;/p&gt;", "location": { "name": "Stockholm, Sweden" }, "offices": [{ "location": "Helsinki, Finland" }], "first_published": "2026-10-19T10:00:00Z" },
+    { "id": 103, "internal_job_id": null, "title": "Backend Engineer", "absolute_url": "https://jobs.example.com/orbit/103", "content": "<p>Own production systems.</p>", "location": { "name": "Pune, India" } }
+  ] }]
+}

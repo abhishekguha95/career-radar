@@ -33,7 +33,10 @@ export interface IngestionOptions {
 }
 
 function recordId(raw: unknown): string | null {
-  if (raw && typeof raw === 'object' && 'id' in raw && typeof raw.id === 'string') return raw.id.slice(0, 200);
+  if (raw && typeof raw === 'object' && 'id' in raw) {
+    if (typeof raw.id === 'string') return raw.id.slice(0, 200);
+    if (typeof raw.id === 'number' && Number.isSafeInteger(raw.id) && raw.id > 0) return String(raw.id);
+  }
   return null;
 }
 

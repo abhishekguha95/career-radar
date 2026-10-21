@@ -18,6 +18,8 @@ try {
     const fixture = await readFixture(`fixtures/lever/${path}.json`);
     await ingest({ source: fixture.source, adapter: new FixtureAdapter(fixture), mode: 'FIXTURE', store });
   }
+  const greenhouse = await readFixture('fixtures/greenhouse/baseline.json');
+  await ingest({ source: greenhouse.source, adapter: new FixtureAdapter(greenhouse), mode: 'FIXTURE', store });
   await store.upsertSource({ provider: 'LEVER', region: 'eu', site: 'fixture-not-run', employer: 'Waiting Fictional Source' }, 'LIVE');
   const url = new URL(databaseUrl);
   url.searchParams.set('options', `-c search_path=${schema},public`);
