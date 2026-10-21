@@ -117,4 +117,4 @@ TEST_DATABASE_URL must name a dedicated database ending in `_test`. Tests create
 - `fixtures/lever`: fictional, network-independent source data.
 - `docs`: [system design walkthrough](docs/SYSTEM_DESIGN.md), [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [research](docs/OPEN_SOURCE_RESEARCH.md), [verification](docs/VERIFICATION.md).
 
-See verification and roadmap for completion evidence and the next review. Original code is MIT licensed; research inputs are not imported dependencies. Implementation subtasks have incremental Git commits. No branch has been pushed or deployed.
+See verification and roadmap for completion evidence and the next review. The [Phase 3 handover](docs/PHASE_3_HANDOVER.md) covers real-employer coverage, profile requirements, evaluation and ranking proposals for the next implementation session. Original code is MIT licensed; research inputs are not imported dependencies. Implementation subtasks have incremental Git commits. No branch has been pushed or deployed.
