@@ -37,3 +37,9 @@ Verified empty-schema migration and no-op replay; fixture/live source isolation;
 Additional integration checks cover baseline replay, complete smaller crawl without closure, later-page failure retaining successful changes, total fetch failure, malformed first duplicate followed by valid records, page caps, bounded error samples, cancellation/lock release, and overlapping ingestion runs.
 
 Actual `pnpm db:migrate` applied the second migration for latest-observation provenance. Actual `pnpm ingest --fixture fixtures/lever/baseline.json` ran twice: first SUCCEEDED with fetched/accepted/created=3; second SUCCEEDED with unchanged=3 and created=0. Fixture data resides only in the local development database. Changed/partial fixtures were tested in isolated integration schemas.
+
+## Increment 5a: narrow geography signal
+
+`build`, `typecheck`, and `lint` passed. Unit suite: **51 tests in 2 files**; PostgreSQL suite: **19 tests in 2 files**. Confirmed one ELIGIBLE, one INELIGIBLE, and one UNKNOWN assessment from the baseline fixture, without duplicate assessments on replay. Unit cases cover negation, questions, unsupported/conditional wording, sponsorship ambiguity, contradictory statements/metadata, contextual qualifiers, and exact evidence offsets.
+
+The first integration run found that HTML list bullets prevented an otherwise explicit permission statement from matching. Corrected bullet handling, added an offset-preserving regression test, and reran both suites successfully. These are deterministic rule tests, not a measured real-job precision/recall benchmark.

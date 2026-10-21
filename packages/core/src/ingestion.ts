@@ -2,6 +2,7 @@ import { sourceConfigSchema } from '@career-radar/contracts';
 import type { EligibilitySignal, IngestionError, NormalizedRecord, RunCounters, RunStatus, SourceConfig } from '@career-radar/contracts';
 import { SourceError } from './adapter.js';
 import type { PostingAdapter } from './adapter.js';
+import { assessIndiaRemote } from './eligibility.js';
 
 export interface IngestionStore {
   upsertSource(source: SourceConfig, mode: 'FIXTURE' | 'LIVE'): Promise<string>;
@@ -71,7 +72,7 @@ export async function ingest(options: IngestionOptions): Promise<IngestionResult
           continue;
         }
         try {
-          const change = await store.persist(sourceId, runId, record, options.assess?.(record));
+          const change = await store.persist(sourceId, runId, record, (options.assess ?? assessIndiaRemote)(record));
           counters.accepted++;
           counters[change]++;
         } catch (error) {

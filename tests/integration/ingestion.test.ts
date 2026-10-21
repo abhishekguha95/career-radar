@@ -17,6 +17,8 @@ describe('end-to-end fixture ingestion', () => {
     expect(await replay(baseline)).toMatchObject({ status: 'SUCCEEDED', complete: true, counters: { created: 0, updated: 0, unchanged: 3 } });
     const counts = await db.pool.query('SELECT (SELECT count(*) FROM job_postings) AS postings,(SELECT count(*) FROM job_snapshots) AS snapshots,(SELECT count(*) FROM opportunities) AS opportunities');
     expect(counts.rows[0]).toEqual({ postings: '3', snapshots: '3', opportunities: '3' });
+    const assessments = await db.pool.query('SELECT result,count(*) FROM eligibility_assessments GROUP BY result ORDER BY result');
+    expect(assessments.rows).toEqual([{ result: 'ELIGIBLE', count: '1' }, { result: 'INELIGIBLE', count: '1' }, { result: 'UNKNOWN', count: '1' }]);
   });
 
   it('updates changed content but does not close absent postings after a successful smaller crawl', async () => {
