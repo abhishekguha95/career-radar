@@ -97,6 +97,8 @@ Final cleanup check: no listeners remained on 3000, 3001, 3100, 3101 or 3102. Th
 
 ## Limits of the evidence
 
+2026-10-22 Phase 3A research: eight-employer coverage matrix added in EMPLOYER_COVERAGE.md, with unresolved integrations recorded rather than guessed. Bounded read-only GETs to the employer-linked Greenhouse feeds returned Grafana 143/143 records (2,239,464 bytes), Razorpay 26/26 (378,269 bytes), and Wolt 202/202 (2,394,562 bytes). No database import, raw posting artifact, new dependency or application change in this research increment. Diff whitespace checks passed; application checks were not rerun for these research documents. Scheduler/ranking behavior remains unimplemented.
+
 2026-10-22 planning update: daily cadence and repeat/coverage requirements are recorded in ROADMAP, DECISIONS (D019) and PHASE_3_HANDOVER. Reviewed existing persistence and ingestion code plus integration test cases for exact identity, unchanged observations, snapshots and page-limit outcomes. No application code, database contents or active schedules changed. Build, lint, typecheck, unit, PostgreSQL integration and browser suites were not rerun for this documentation-only update; the earlier pass counts remain historical. No daily scheduler, briefing-history behavior or completeness guarantee is verified by this update.
 
 Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, real-employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure, fuzzy merges, or later-phase features were implemented.

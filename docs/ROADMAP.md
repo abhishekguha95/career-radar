@@ -34,6 +34,8 @@ After the UI: proceed to employer coverage research, profile requirements, a rev
 
 ## Phase 3 daily search requirements
 
+Phase 3A progress, 2026-10-22: the [employer coverage pilot](EMPLOYER_COVERAGE.md) establishes three verified Greenhouse boards, one Lever board, one unsupported Ashby board and three unresolved integrations. D020 records the authorized Greenhouse increment; implementation and fresh verification follow. Employer feeds and preliminary track relevance are not an eligibility verdict or ranked shortlist.
+
 Owner update, 2026-10-22 (Asia/Kolkata): both **India & Global Remote** and **Europe Relocation** should run every morning, replacing the earlier Tuesday/Friday and Monday/Thursday schedules. They remain separate search tracks. Thursday's Europe accountability check remains Thursday-only. Exact time and scheduler mechanism are pending; no daily trigger is configured by this documentation change. Candidate facts and detailed personal profile configuration stay out of Git.
 
 Daily collection and daily presentation have distinct requirements:
