@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "profileId": "fictional-example",
+  "capturedOn": "2026-01-01",
+  "review": { "status": "DRAFT", "reviewedAt": null },
+  "candidate": {
+    "evidenceLevel": "USER_STATED",
+    "currentLocation": { "city": "Kochi", "countryCode": "IN" },
+    "approximateYearsExperience": 3,
+    "productionOwnership": { "applicationCount": 1, "environments": ["Fictional analytics service"], "capabilities": ["Service operations"] },
+    "skills": { "strongProduction": ["Python", "PostgreSQL"], "developing": ["Rust"], "learningOrPortfolio": ["Kubernetes"] },
+    "unknowns": { "citizenship": null, "workAuthorizations": [], "currentAnnualCashInr": null, "noticePeriodDays": null }
+  },
+  "sharedSearch": {
+    "targetRoles": ["Backend Engineer"], "stretchRoles": ["Senior Backend Engineer"],
+    "preferredSectors": ["Scientific software"], "preferredCompanyTraits": ["Mentorship"],
+    "deprioritize": { "primaryLanguages": ["PHP"], "roleCharacteristics": ["Maintenance-only work"], "expertOnlyRequirements": ["Expert-only Rust"] },
+    "rankingPriorities": ["Credible hireability", "Learning opportunity"], "namedTargetEmployers": [],
+    "compensationPreference": { "minimumAnnualBaseInr": null }
+  },
+  "scheduleIntent": { "cadence": "DAILY", "timeZone": "Asia/Kolkata", "period": "MORNING", "localTime": null },
+  "briefing": {
+    "maximumResultsPerTrack": 5, "allowFewerResults": true,
+    "freshness": { "preferredLookbackDays": { "minimum": 3, "maximum": 7 }, "hardCutoff": false, "missingPostingDate": "UNKNOWN" },
+    "requiredFields": ["Company", "Role", "Source URL", "Evidence", "Gaps"], "minimumConcreteTechnicalMatches": 2,
+    "evidenceLabels": ["CONFIRMED", "INDICATED", "UNVERIFIED"], "fitVerdicts": ["HIGH_FIT", "GOOD_FIT", "STRETCH"],
+    "compensation": { "indiaDisplayCurrency": "INR", "indiaDisplayPeriod": "ANNUAL", "reportPublishedCashCompensation": true, "missingLabel": "NOT DISCLOSED", "distinguishBaseBonusEquity": true, "inventAmounts": false },
+    "maximumApplyFirstRecommendations": 2, "resumeOrOutreachSuggestions": 1, "interviewPreparationTopics": 1, "useVerifiableAccomplishmentsOnly": true
+  },
+  "historyIntent": { "reobserveKnownPostings": true, "suppressUnchangedReportedRepeats": true, "keepUnreportedCandidates": true, "resurfaceMaterialChanges": true, "noAutomaticClosureOnMissingOrFailedCrawls": true },
+  "tracks": {
+    "indiaGlobalRemote": {
+      "id": "INDIA_GLOBAL_REMOTE",
+      "locationPreferenceOrder": ["INDIA_REMOTE", "GLOBAL_REMOTE_FROM_INDIA", "PREFERRED_CITY_HYBRID_OR_ON_SITE", "EXCEPTIONAL_OTHER_INDIA"],
+      "preferredCity": "Kochi", "exceptionalCities": ["Chennai"], "otherIndiaCities": "ONLY_WITH_COMPELLING_JUSTIFICATION", "tradeoffJustifications": ["Mentorship"],
+      "indiaEmploymentEvidence": { "requireRoleSpecificPermission": true, "acceptableRoutes": ["INDIAN_LEGAL_ENTITY", "COMPLIANT_EOR", "DOCUMENTED_INDIA_ELIGIBILITY"], "remoteUsOrEuIsInsufficient": true, "verifyWorkAuthorizationSeparately": true },
+      "excludeEuropeanRelocation": true
+    },
+    "europeRelocation": {
+      "id": "EUROPE_RELOCATION", "countryPriorityTiers": [["DK"], ["DE"]], "workModels": ["HYBRID"],
+      "englishRequirement": "RECORD_EXPLICIT_EVIDENCE_OR_UNKNOWN", "requireEuropeanEmploymentGoal": true, "excludeIndiaEmploymentAndRemoteFromIndia": true,
+      "authorizationEvidence": { "assessApplicantsFromIndia": true, "assessSponsorshipAndRelocationSeparately": true, "existingEuropeanAuthorizationRequirement": "REJECT_UNLESS_CREDIBLE_EMPLOYER_SUPPORT", "relocationDoesNotEstablishSponsorship": true, "euRemoteDoesNotEstablishIndiaEligibility": true, "missingEvidence": "UNVERIFIED" },
+      "accountabilityCheck": { "weekday": "THURSDAY", "knownHistoryOnly": true, "missingHistory": "STATE_UNAVAILABLE_AND_REQUEST_CONCISE_COUNTS", "maximumNextActions": 2 }
+    }
+  }
+}

@@ -123,10 +123,24 @@ All three sources are HEALTHY. All 371 stored employer summaries were paged thro
 
 Greenhouse workplace, country and employment-type fields remain UNKNOWN/null where there is no implemented structured mapping. Exact-source browsing is available through Sources; overview metrics and the LIVE filter still include demo data. No combined demo-free shortlist, private profile, ranker, new eligibility context, automatic discovery or daily trigger was implemented in this increment.
 
+## Phase 3B increment: private search configuration
+
+2026-10-22. D021 adds a strict, versioned shared candidate/search contract with separate India/global-remote and Europe-relocation parameters, a bounded local loader and a sanitized validation CLI. The private draft is in root `.local/`, which is ignored and has no tracked files. Personal contents and its content-version digest are not recorded here; committed examples/tests use a different fictional candidate. Validation leaves review status DRAFT and makes no eligibility or factual-verification claim.
+
+- `npm run profile:validate`: passed against the local private draft. The command rebuilds contracts/core, reads only the local file and prints generic metadata, without candidate values.
+- `node scripts/validate-search-profile.mjs fixtures/profiles/example.json`: passed against the fictional example.
+- `npm run build`: passed across all workspaces; contracts/core were rebuilt once more for the finalized configuration layout.
+- `npm run typecheck` and `npm run lint`: passed. A sandbox npm-registry EACCES on the initial typecheck bootstrap was resolved by rerunning as the owner; no remaining blocker.
+- `npm test`: **111 tests in 5 files passed**, including 17 new profile cases covering shared settings, distinct track parameters, unknowns, skill-level conflicts, strict fields, country/review consistency, stable content versions, priority changes, bounded reads, sanitized failures and absence of network access.
+- `npm run test:integration`: **51 PostgreSQL tests in 4 files passed**. No database schema or working postings were changed in this increment; the test audit found zero generated schemas left behind.
+- Git ignore/tracked-file checks confirmed `.local/search-profile.json` is ignored and no `.local` files are tracked. Only generic code/docs and fictional data are committed.
+
+Browser tests were not rerun: this increment adds no frontend route, UI interaction or profile-driven job behavior. The earlier ten browser passes remain historical. Existing development listeners were preserved; no scheduler, assessment, application history or external delivery was activated. The private file is currently consumed only by its explicit validation command; matcher/eligibility integration and owner review remain next work.
+
 ## Limits of the evidence
 
 2026-10-22 Phase 3A research: eight-employer coverage matrix added in EMPLOYER_COVERAGE.md, with unresolved integrations recorded rather than guessed. Bounded read-only GETs to the employer-linked Greenhouse feeds returned Grafana 143/143 records (2,239,464 bytes), Razorpay 26/26 (378,269 bytes), and Wolt 202/202 (2,394,562 bytes). No database import, raw posting artifact, new dependency or application change in this research increment. Diff whitespace checks passed; application checks were not rerun for these research documents. Scheduler/ranking behavior remains unimplemented.
 
 2026-10-22 planning update: daily cadence and repeat/coverage requirements are recorded in ROADMAP, DECISIONS (D019) and PHASE_3_HANDOVER. Reviewed existing persistence and ingestion code plus integration test cases for exact identity, unchanged observations, snapshots and page-limit outcomes. No application code, database contents or active schedules changed. Build, lint, typecheck, unit, PostgreSQL integration and browser suites were not rerun for this documentation-only update; the earlier pass counts remain historical. No daily scheduler, briefing-history behavior or completeness guarantee is verified by this update.
 
-Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, broad employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure or fuzzy merges were implemented; Phase 3 work beyond the documented provider/coverage increment remains pending.
+Windows/Node 24.3.0 and PostgreSQL 18.6 were exercised. Linux/macOS, API/worker container images, CI, authentication, broad employer coverage, and geography precision/recall on a labeled real-job corpus were not tested. The narrow classifier is a versioned source-text signal, not an overall eligibility or visa assessment. No automatic closure or fuzzy merges were implemented; Phase 3 work beyond the documented provider/coverage and private-configuration increments remains pending.

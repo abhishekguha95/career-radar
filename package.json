@@ -19,6 +19,7 @@
     "test:integration": "vitest run --project integration",
     "db:migrate": "npm exec --yes --package=pnpm@12.14.0 -- pnpm --filter @career-radar/database... --workspace-concurrency=1 build && node packages/database/dist/migrate-cli.js",
     "ingest": "npm exec --yes --package=pnpm@12.14.0 -- pnpm --filter @career-radar/ingest start",
+    "profile:validate": "npm exec --yes --package=pnpm@12.14.0 -- pnpm --filter @career-radar/core... --workspace-concurrency=1 build && node scripts/validate-search-profile.mjs",
     "start": "node apps/api/dist/main.js",
     "test:ui": "npm exec --yes --package=pnpm@12.14.0 -- pnpm --filter @career-radar/ingest... --workspace-concurrency=1 build && node scripts/test-ui.mjs"
   },

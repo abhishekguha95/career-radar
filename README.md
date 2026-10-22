@@ -110,7 +110,9 @@ TEST_DATABASE_URL must name a dedicated database ending in `_test`. Tests create
 
 ## Current limits
 
-- No ranking, candidate profiles, embeddings, LLMs, resume generation, email, applications, deployment, daily scheduler, or ATS connectors beyond Lever and Greenhouse.
+A validated private search configuration can be kept in `.local/search-profile.json` (ignored by Git). Run `npm run profile:validate`; see [profile layout and flow](docs/SEARCH_PROFILE.md) and the [fictional example](fixtures/profiles/example.json). It shares candidate/skills/roles across both tracks and keeps location/employment requirements separate. It currently records preferences only; ingestion, dashboard reads, ranking and scheduling do not consume it.
+
+- No ranking, profile-driven matching/UI, embeddings, LLMs, resume generation, email, applications, deployment, daily scheduler, or ATS connectors beyond Lever and Greenhouse.
 - Geography rules recognize a small whitelist of explicit statements. Most real descriptions can remain UNKNOWN; no real-job precision/recall benchmark is claimed.
 - No fuzzy cross-source merging or automatic closure. A posting last observed as PUBLISHED can become stale; inspect lastSeenAt and source/run health.
 - Offset pagination is internally consistent per response; separate pages can shift during ingestion.

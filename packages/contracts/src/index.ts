@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export * from './search-profile.js';
+
 export const sourceProviderSchema = z.enum(['LEVER', 'GREENHOUSE']);
 const sourceIdentitySchema = z.object({
   provider: sourceProviderSchema,
